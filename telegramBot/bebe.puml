@@ -1,0 +1,73 @@
+@startuml
+class org.example.database.DatabaseManager {
+- {static} String URL
+- {static} String USER
+- {static} String PASSWORD
++ Connection getConnection()
++ void saveUser(String,String)
++ void loginBot(String,String,long)
++ void addFilmDB(String,String,int,String,String)
++ List<String> getFilmsDataDB(String)
++ int getFilmsCount(String)
++ String[] getFilmByNameDB(String,String)
++ boolean checkFilm(String,String)
++ void changeFilm(String,String,String,String)
+- void sendMessage(long,String)
+}
+
+
+class org.example.bot.BotConfig {
++ {static} String BOT_TOKEN
++ {static} String BOT_NAME
+}
+
+class org.example.bot.Bot {
+- DatabaseManager databaseManager
+- boolean isRegistration
+- boolean isAddFilmCommand
++ {static} boolean isAuthorized
+- {static} boolean isLoginCommand
+- boolean isSearchFilmCommand
+- {static} String selectedFilm
+- boolean isSelectChangeFilm
+- boolean isСhangedFilm
+- {static} boolean backFlag
+- String login
+- String password
++ String getBotUsername()
++ String getBotToken()
++ void onUpdateReceived(Update)
+- void startCommand(long,String)
+- void registrationCommand(long)
+- void loginCommand(long)
+- void commandsCommand(long)
+- void commandsFAQ(long)
+- void addFilmCommand(long)
+- void changeFilmCommand(long)
+- void userChangeFilmSelectPoint(long,String)
+- void userChangeFilmData(long,String)
+- void userAddFilmData(long,String)
+- void logoutCommand(long)
+- void showListFilmsCommand(long,List<String>)
+- void searchFilmCommand(long)
+- void searchFilm(long,String)
+- void sendMessage(long,String)
+}
+
+
+class org.example.Main {
++ {static} void main(String[])
+}
+
+class org.example.utils.CommandList {
+- List<String> commandList
++ void addCommand(String)
++ List<String> getCommandList()
++ String getCommands()
+}
+
+
+
+
+org.telegram.telegrambots.bots.TelegramLongPollingBot <|-- org.example.bot.Bot
+@enduml
