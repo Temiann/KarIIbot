@@ -10,23 +10,10 @@ import java.util.List;
 import java.util.Properties;
 
 public class DatabaseManager {
-
-    private static final String URL = "jdbc:clickhouse://s39gbj1fw4.eu-central-1.aws.clickhouse.cloud:8443/default";
-    private static final String USER = "default";
-    private static final String PASSWORD = "ZD7oxk.q5q_Qd";
-
-    public Connection getConnection() throws SQLException {
-        Properties properties = new Properties();
-        properties.setProperty("user", USER);
-        properties.setProperty("password", PASSWORD);
-        properties.setProperty("ssl", "true");
-        properties.setProperty("sslcert", "/path/to/certificate.pem");
-        return DriverManager.getConnection(URL, properties);
-    }
-
+    DatabaseDAO db = new DatabaseDAO();
     public void saveUser(String login, String password) {
         String query = "INSERT INTO Accounts (Login, Password) VALUES (?, ?)";
-        try (Connection connection = getConnection()) {
+        try (Connection connection = db.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, login);
             statement.setString(2, password);
@@ -37,7 +24,7 @@ public class DatabaseManager {
     }
     public void loginBot(String login, String password, long chatId){
         String query = "SELECT * FROM Accounts WHERE Login = ? and Password = ?";
-        try (Connection connection = getConnection()){
+        try (Connection connection = db.getConnection()){
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, login);
             statement.setString(2,password);
@@ -57,7 +44,7 @@ public class DatabaseManager {
     }
     public void addFilmDB(String film_name, String description, int rating, String imgurl, String login){
         String query = "INSERT INTO filmslist (film_name, description, rating, imgurl, account_login) values (?,?,?,?,?)";
-        try (Connection connection = getConnection()){
+        try (Connection connection = db.getConnection()){
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, film_name);
             statement.setString(2, description);
@@ -74,7 +61,7 @@ public class DatabaseManager {
         List<String > filmsData = new ArrayList<>();
         String query = "SELECT film_name, rating FROM filmslist WHERE account_login = ? ORDER BY film_name";
 
-        try (Connection connection = getConnection()){
+        try (Connection connection = db.getConnection()){
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1,login);
             ResultSet resultSet = statement.executeQuery();
@@ -95,7 +82,7 @@ public class DatabaseManager {
         String query = "SELECT COUNT(*) FROM filmslist WHERE account_login = ?";
         int count = 0;
 
-        try (Connection connection = getConnection()) {
+        try (Connection connection = db.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, login);
             ResultSet resultSet = statement.executeQuery();
@@ -110,7 +97,7 @@ public class DatabaseManager {
     }
     public String[] getFilmByNameDB(String name, String login) {
         String query = "SELECT film_name, description, rating , imgurl FROM filmslist WHERE film_name = ? AND account_login = ?";
-        try (Connection connection = getConnection();
+        try (Connection connection = db.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, name);
             statement.setString(2, login);
@@ -130,7 +117,7 @@ public class DatabaseManager {
     }
     public boolean checkFilm(String name, String login) {
         String query = "Select film_name FROM filmslist WHERE film_name = ? AND account_login = ?";
-        try (Connection connection = getConnection();
+        try (Connection connection = db.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)){
                 statement.setString(1, name);
                 statement.setString(2, login);
@@ -143,7 +130,7 @@ public class DatabaseManager {
     }
     public void changeFilm(String point, String text, String selectedFilm, String login){
         String query = "ALTER TABLE filmslist UPDATE `" + point + "` = ? WHERE film_name = ? AND account_login = ?";
-        try (Connection connection = getConnection();
+        try (Connection connection = db.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)){
             if(point.equals("film_name") || point.equals("description") || point.equals("imgurl")){
                 statement.setString(1, text);
