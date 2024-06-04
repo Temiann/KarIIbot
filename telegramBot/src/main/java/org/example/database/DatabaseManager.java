@@ -1,6 +1,7 @@
 package org.example.database;
 
 import org.example.bot.Bot;
+import org.example.handleCommand.Command;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -10,7 +11,10 @@ import java.util.List;
 import java.util.Properties;
 
 public class DatabaseManager {
+
     DatabaseDAO db = new DatabaseDAO();
+
+
     public void saveUser(String login, String password) {
         String query = "INSERT INTO Accounts (Login, Password) VALUES (?, ?)";
         try (Connection connection = db.getConnection()) {
@@ -30,8 +34,8 @@ public class DatabaseManager {
             statement.setString(2,password);
             ResultSet resultSet = statement.executeQuery();
 
-            Bot.isAuthorized = resultSet.next();
-            if(Bot.isAuthorized == true) {
+            Command.isAuthorized = resultSet.next();
+            if(Command.isAuthorized == true) {
                 sendMessage(chatId, "Вы успешно вошли в аккаунт " + login);
             } else {
                 sendMessage(chatId, "Ошибка авторизации");
